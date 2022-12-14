@@ -14,7 +14,7 @@ function App() {
     try {
         setState('loading')
         const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
-        console.log(response)
+
         setState('complete')
     } catch (err) {
         setState('error')
@@ -37,13 +37,13 @@ const handleSearchChange = (e) => setUserApiValue(e.target.value)
         <input type="text" value={userApiValue} onChange={handleSearchChange} id="userApi" name="userApi" />
       </div>
 
-      {/* <div>
+      <div>
         <label htmlFor="factionFilter">Faction filter:</label>
-        <input type="text" value={factionSearchValue} id="factionFilter" name="factionFilter" />
-      </div> */}
+        <input type="text" id="factionFilter" name="factionFilter" />
+      </div>
 
       <div>
-        <button onClick={getData}>Get Data!</button>
+        <button disabled={state === 'loading'} onClick={getData}>Get Data!</button>
       </div>
 
       {state === 'loading' && (
