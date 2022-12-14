@@ -1,9 +1,9 @@
 export const TornReviveData = () => {
 
     return (
-        <div class="user-card-wrapper">
-            <div class="user-card">
-                <div class="card-container">
+        <div className="user-card-wrapper">
+            <div className="user-card">
+                <div className="card-container">
                     <div>Leeroy[1337]</div>
                     <div>Revives: 12</div>
                     <div>Successes: 10</div>
