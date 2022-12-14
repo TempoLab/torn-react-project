@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Loader } from './components/Loader.jsx'
+import { ErrorMessage } from './components/ErrorMessage.jsx'
+import { TornReviveData } from './components/TornReviveData.jsx'
 import './App.scss'
 
 function App() {
@@ -27,19 +30,19 @@ function App() {
 
       {state === 'loading' && (
         <div>
-          <p>loading...</p>
+          <Loader />
         </div>
       )}
 
       {state === 'error' && (
         <div>
-          <p>error message</p>
+          <ErrorMessage />
         </div>
       )}
 
       {state === 'complete' && (
         <div>
-          <p>App</p>
+          <TornReviveData />
         </div>
       )}
 
