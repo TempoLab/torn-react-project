@@ -1,3 +1,9 @@
+/* Media queries */
+$breakpoint-phone: 576px;
+$breakpoint-tablet: 768px;
+$breakpoint-laptop: 992px;
+$breakpoint-desktop: 1200px;
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -38,4 +44,30 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.screen-size {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 4px;
+  background-color: blue;
+
+  @media (min-width: $breakpoint-phone) {
+    background-color: red;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    background-color: purple;
+  }
+
+  @media (min-width: $breakpoint-laptop) {
+    background-color: lime;
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    background-color: deeppink;
+  }
 }

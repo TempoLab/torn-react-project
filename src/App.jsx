@@ -1,32 +1,48 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import './App.scss'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [state, setState] = useState('idle');
 
   return (
-    <div className="App">
+    <div className="container">
+      <header>
+        <div className="screen-size"></div>
+        <h1>Torn Revive Ledger</h1>
+      </header>
+
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <label htmlFor="userApi">Your API Key:</label>
+        <input type="text" id="userApi" name="userApi" />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+      <div>
+        <label htmlFor="factionFilter">Faction filter:</label>
+        <input type="text" id="factionFilter" name="factionFilter" />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+      <div>
+        <button>Get Data!</button>
+      </div>
+
+      {state === 'loading' && (
+        <div>
+          <p>loading...</p>
+        </div>
+      )}
+
+      {state === 'error' && (
+        <div>
+          <p>error message</p>
+        </div>
+      )}
+
+      {state === 'complete' && (
+        <div>
+          <p>App</p>
+        </div>
+      )}
+
     </div>
   )
 }
