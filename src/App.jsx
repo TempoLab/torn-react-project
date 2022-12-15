@@ -7,14 +7,16 @@ import './App.scss'
 
 function App() {
   const [state, setState] = useState('idle');
-  const [userApiValue, setUserApiValue] = useState([])
+  const [userApiValue, setUserApiValue] = useState('')
+  const [reviveData, setReviveData] = useState([])
 
   const apiHandler = async (userApiValue) => {
     const search = userApiValue
     try {
         setState('loading')
         const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
-
+        const responseArray = Object.values(response.revives)
+        setReviveData(responseArray)
         setState('complete')
     } catch (err) {
         setState('error')
@@ -60,7 +62,7 @@ const handleSearchChange = (e) => setUserApiValue(e.target.value)
 
       {state === 'complete' && (
         <div>
-          <TornReviveData getData={getData} userApiValue={userApiValue} setUserApiValue={setUserApiValue} setState={setState} />
+          <TornReviveData reviveData={reviveData} />
         </div>
       )}
 
