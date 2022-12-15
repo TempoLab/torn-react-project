@@ -15,6 +15,70 @@ $breakpoint-desktop: 1200px;
   max-height: 400px;
 }
 
+body {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 0 20px;
+  margin: 0 auto;
+}
+
+// Revive cards
+
+.user-card-wrapper {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  column-gap: 10px;
+  row-gap: 15px;
+
+  @media (min-width: $breakpoint-phone) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: $breakpoint-laptop) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card-container {
+  padding: 15px 38px;
+}
+
+.user-card {
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+    &:hover {
+      box-shadow: 0 8px 16px 0 lightskyblue;
+    }
+}
+
+.event-log-box {
+  height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+a {
+  color: cornflowerblue;
+}
+
 // Loader
 
 .loading-bar-wrapper {
@@ -92,7 +156,7 @@ $breakpoint-desktop: 1200px;
   }
 }
 
-// Loader End
+// Screen size tool
 
 .screen-size {
   position: fixed;
