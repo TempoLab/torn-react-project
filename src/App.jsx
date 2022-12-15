@@ -16,7 +16,37 @@ function App() {
         setState('loading')
         const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
         const responseArray = Object.values(response.revives)
-        setReviveData(responseArray)
+        const usersRevivedAsObject = responseArray.reduce((accumulator, userReviveEntry) => {
+          const localAccumulator = accumulator[userReviveEntry.target_id] !== undefined ? accumulator : {
+            ...accumulator,
+            [userReviveEntry.target_id]: {
+              name: userReviveEntry.target_name,
+              id: userReviveEntry.target_id,
+              faction: userReviveEntry.target_factionname,
+              reviveSuccess: 0,
+              reviveFailure: 0,
+            }
+          }
+          const target = localAccumulator[userReviveEntry.target_id]
+          if (userReviveEntry.result === 'success') {
+            return {
+              ...localAccumulator,
+              [userReviveEntry.target_id]: {
+                ...target,
+                reviveSuccess: target.reviveSuccess + 1
+              }
+            }
+          }
+          return {
+            ...localAccumulator,
+            [userReviveEntry.target_id]: {
+              ...target,
+              reviveFailure: target.reviveFailure + 1
+            }
+          }
+        })
+        const usersRevivedAsAnArray = Object.values(usersRevivedAsObject)
+        setReviveData(usersRevivedAsAnArray)
         setState('complete')
     } catch (err) {
         setState('error')

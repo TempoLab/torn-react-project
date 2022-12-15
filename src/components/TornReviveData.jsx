@@ -6,10 +6,10 @@ export const TornReviveData = ({reviveData}) => {
             {reviveData.map((item) => (
             <div className="user-card">
                 <div className="card-container">
-                    <div>{item.target_name}[{item.target_id}]</div>
-                    <div>Revives: 12</div>
-                    <div>Successes: 10</div>
-                    <div>Failures: 2</div>
+                    <div>{item.name}[{item.id}]</div>
+                    <div>Revives: {item.reviveSuccess + item.reviveFailure}</div>
+                    <div>Successes: {item.reviveSuccess}</div>
+                    <div>Failures: {item.reviveFailure}</div>
                     <div className="event-log-box">
                         <p>log box <br />
                             log box <br />
