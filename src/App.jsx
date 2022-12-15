@@ -44,7 +44,7 @@ function App() {
               reviveFailure: target.reviveFailure + 1
             }
           }
-        })
+        }, {})
         const usersRevivedAsAnArray = Object.values(usersRevivedAsObject)
         setReviveData(usersRevivedAsAnArray)
         setState('complete')
