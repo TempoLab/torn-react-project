@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ky from 'ky'
 import { Loader } from './components/Loader.jsx'
 import { ErrorMessage } from './components/ErrorMessage.jsx'
 import { TornReviveData } from './components/TornReviveData.jsx'
@@ -6,6 +7,23 @@ import './App.scss'
 
 function App() {
   const [state, setState] = useState('idle');
+  const [userApiValue, setUserApiValue] = useState([])
+
+  const apiHandler = async (userApiValue) => {
+    const search = userApiValue
+    try {
+        setState('loading')
+        const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
+
+        setState('complete')
+    } catch (err) {
+        setState('error')
+        console.log(err)
+    }
+}
+
+const getData = () => apiHandler(userApiValue)
+const handleSearchChange = (e) => setUserApiValue(e.target.value)
 
   return (
     <div className="container">
@@ -16,7 +34,7 @@ function App() {
 
       <div>
         <label htmlFor="userApi">Your API Key:</label>
-        <input type="text" id="userApi" name="userApi" />
+        <input type="text" value={userApiValue} onChange={handleSearchChange} id="userApi" name="userApi" />
       </div>
 
       <div>
@@ -25,7 +43,7 @@ function App() {
       </div>
 
       <div>
-        <button>Get Data!</button>
+        <button disabled={state === 'loading'} onClick={getData}>Get Data!</button>
       </div>
 
       {state === 'loading' && (
@@ -42,7 +60,7 @@ function App() {
 
       {state === 'complete' && (
         <div>
-          <TornReviveData />
+          <TornReviveData getData={getData} userApiValue={userApiValue} setUserApiValue={setUserApiValue} setState={setState} />
         </div>
       )}
 
