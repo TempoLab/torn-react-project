@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import ky from 'ky'
 import { Loader } from './components/Loader.jsx'
 import { ErrorMessage } from './components/ErrorMessage.jsx'
@@ -8,54 +8,59 @@ import './App.scss'
 function App() {
   const [state, setState] = useState('idle');
   const [userApiValue, setUserApiValue] = useState('')
-  const [reviveData, setReviveData] = useState([])
+  const [responseArray, setResponseArray] = useState([])
+
+  const usersRevivedAsObject = useMemo(() => {
+    return responseArray.reduce((accumulator, userReviveEntry) => {
+      const localAccumulator = accumulator[userReviveEntry.target_id] !== undefined ? accumulator : {
+        ...accumulator,
+        [userReviveEntry.target_id]: {
+          name: userReviveEntry.target_name,
+          id: userReviveEntry.target_id,
+          faction: userReviveEntry.target_factionname,
+          reviveSuccess: 0,
+          reviveFailure: 0,
+        }
+      }
+      const target = localAccumulator[userReviveEntry.target_id]
+      if (userReviveEntry.result === 'success') {
+        return {
+          ...localAccumulator,
+          [userReviveEntry.target_id]: {
+            ...target,
+            reviveSuccess: target.reviveSuccess + 1
+          }
+        }
+      }
+      return {
+        ...localAccumulator,
+        [userReviveEntry.target_id]: {
+          ...target,
+          reviveFailure: target.reviveFailure + 1
+        }
+      }
+    }, {})
+  }, [responseArray])
+
+  const reviveData = useMemo(() => {
+    return Object.values(usersRevivedAsObject)
+  }, [usersRevivedAsObject])
 
   const apiHandler = async (userApiValue) => {
     const search = userApiValue
     try {
-        setState('loading')
-        const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
-        const responseArray = Object.values(response.revives)
-        const usersRevivedAsObject = responseArray.reduce((accumulator, userReviveEntry) => {
-          const localAccumulator = accumulator[userReviveEntry.target_id] !== undefined ? accumulator : {
-            ...accumulator,
-            [userReviveEntry.target_id]: {
-              name: userReviveEntry.target_name,
-              id: userReviveEntry.target_id,
-              faction: userReviveEntry.target_factionname,
-              reviveSuccess: 0,
-              reviveFailure: 0,
-            }
-          }
-          const target = localAccumulator[userReviveEntry.target_id]
-          if (userReviveEntry.result === 'success') {
-            return {
-              ...localAccumulator,
-              [userReviveEntry.target_id]: {
-                ...target,
-                reviveSuccess: target.reviveSuccess + 1
-              }
-            }
-          }
-          return {
-            ...localAccumulator,
-            [userReviveEntry.target_id]: {
-              ...target,
-              reviveFailure: target.reviveFailure + 1
-            }
-          }
-        }, {})
-        const usersRevivedAsAnArray = Object.values(usersRevivedAsObject)
-        setReviveData(usersRevivedAsAnArray)
-        setState('complete')
+      setState('loading')
+      const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
+      setResponseArray(Object.values(response.revives))
+      setState('complete')
     } catch (err) {
-        setState('error')
-        console.log(err)
+      setState('error')
+      console.log(err)
     }
-}
+  }
 
-const getData = () => apiHandler(userApiValue)
-const handleSearchChange = (e) => setUserApiValue(e.target.value)
+  const getData = () => apiHandler(userApiValue)
+  const handleSearchChange = (e) => setUserApiValue(e.target.value)
 
   return (
     <div className="container">
