@@ -8,10 +8,11 @@ import './App.scss'
 function App() {
   const [state, setState] = useState('idle');
   const [userApiValue, setUserApiValue] = useState('')
-  const [responseArray, setResponseArray] = useState([])
+  const [reviveResponseArray, setReviveResponseArray] = useState([])
+  const [eventResponseArray, setEventResponseArray] = useState([])
 
   const usersRevivedAsObject = useMemo(() => {
-    return responseArray.reduce((accumulator, userReviveEntry) => {
+    return reviveResponseArray.reduce((accumulator, userReviveEntry) => {
       const localAccumulator = accumulator[userReviveEntry.target_id] !== undefined ? accumulator : {
         ...accumulator,
         [userReviveEntry.target_id]: {
@@ -40,18 +41,44 @@ function App() {
         }
       }
     }, {})
-  }, [responseArray])
+  }, [reviveResponseArray])
 
-  const reviveData = useMemo(() => {
-    return Object.values(usersRevivedAsObject)
-  }, [usersRevivedAsObject])
+  const parsedUserEventsAsObject = useMemo(() => {
+    const getIdRegex = /XID\=([0-9]+)(?:"\>|\>)(.+)\<.*/gm;
+    const stripAnchorRegex = /(<\/?[a|A][^>]*>|)/gm;
+    return eventResponseArray
+      .map(item => ({
+        match: getIdRegex.exec(item),
+        message: item.replaceAll(stripAnchorRegex, "")
+      }))
+      .filter(item => item.match !== null)
+      .map(item => {
+        return {
+          id: parseInt(item.match[1]),
+          message: item.message
+        }
+      })
+  }, [eventResponseArray])
+
+  const finalData = useMemo(() => {
+    return Object.values(usersRevivedAsObject).map(item => {
+      return {
+        ...item,
+        reviveTotal: item.reviveSuccess + item.reviveFailure,
+        events: Object.values(parsedUserEventsAsObject).filter(log => log.id === item.id),
+        faction: item.faction
+      }
+    })
+  }, [usersRevivedAsObject, parsedUserEventsAsObject])
 
   const apiHandler = async (userApiValue) => {
     const search = userApiValue
     try {
       setState('loading')
-      const response = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
-      setResponseArray(Object.values(response.revives))
+      const reviveResponse = await ky.get(`https://api.torn.com/user/?selections=revives&key=${search}`).json()
+      const eventResponse = await ky.get(`https://api.torn.com/user/?selections=events&key=${search}`).json()
+      setReviveResponseArray(Object.values(reviveResponse.revives))
+      setEventResponseArray(Object.values(eventResponse.events).map(item => item.event))
       setState('complete')
     } catch (err) {
       setState('error')
@@ -70,12 +97,12 @@ function App() {
       </header>
 
       <div>
-        <label htmlFor="userApi">Your API Key:</label>
+        <label htmlFor="userApi">Your API Key: </label>
         <input type="text" value={userApiValue} onChange={handleSearchChange} id="userApi" name="userApi" />
       </div>
 
       <div>
-        <label htmlFor="factionFilter">Faction filter:</label>
+        <label htmlFor="factionFilter">Faction filter: </label>
         <input type="text" id="factionFilter" name="factionFilter" />
       </div>
 
@@ -97,7 +124,7 @@ function App() {
 
       {state === 'complete' && (
         <div>
-          <TornReviveData reviveData={reviveData} />
+          <TornReviveData finalData={finalData} />
         </div>
       )}
 
