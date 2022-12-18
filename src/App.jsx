@@ -5,14 +5,15 @@ import { ErrorMessage } from './components/ErrorMessage.jsx'
 import { TornReviveData } from './components/TornReviveData.jsx'
 import './App.scss'
 
+const GET_ID_REGEX = /XID\=([0-9]+)(?:"\>|\>)(.+)\<.*/gm;
+const STRIP_ANCHOR_REGEX = /(<\/?[a|A][^>]*>|)/gm;
+
 function App() {
   const [state, setState] = useState('idle');
   const [userApiValue, setUserApiValue] = useState('')
+  const [factionFilterValue, setFactionFilterValue] = useState('')
   const [reviveResponseArray, setReviveResponseArray] = useState([])
   const [eventResponseArray, setEventResponseArray] = useState([])
-
-  const GET_ID_REGEX = /XID\=([0-9]+)(?:"\>|\>)(.+)\<.*/gm;
-  const STRIP_ANCHOR_REGEX = /(<\/?[a|A][^>]*>|)/gm;
 
   const usersRevivedAsObject = useMemo(() => {
     return reviveResponseArray.reduce((accumulator, userReviveEntry) => {
@@ -97,6 +98,7 @@ function App() {
 
   const getData = () => apiHandler(userApiValue)
   const handleSearchChange = (e) => setUserApiValue(e.target.value)
+  const handleFactionFilterChange = (e) => setFactionFilterValue(e.target.value)
 
   return (
     <div className="container">
@@ -111,8 +113,8 @@ function App() {
       </div>
 
       <div>
-        <label htmlFor="factionFilter">Faction filter: </label>
-        <input type="text" id="factionFilter" name="factionFilter" />
+        <label htmlFor="factionFilter">Faction filter:</label>
+        <input type="text" value={factionFilterValue} onChange={handleFactionFilterChange} id="factionFilter" name="factionFilter" />
       </div>
 
       <div>
