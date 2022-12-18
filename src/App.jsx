@@ -11,6 +11,9 @@ function App() {
   const [reviveResponseArray, setReviveResponseArray] = useState([])
   const [eventResponseArray, setEventResponseArray] = useState([])
 
+  const GET_ID_REGEX = /XID\=([0-9]+)(?:"\>|\>)(.+)\<.*/gm;
+  const STRIP_ANCHOR_REGEX = /(<\/?[a|A][^>]*>|)/gm;
+
   const usersRevivedAsObject = useMemo(() => {
     return reviveResponseArray.reduce((accumulator, userReviveEntry) => {
       const localAccumulator = accumulator[userReviveEntry.target_id] !== undefined ? accumulator : {
@@ -44,12 +47,10 @@ function App() {
   }, [reviveResponseArray])
 
   const parsedUserEventsAsObject = useMemo(() => {
-    const getIdRegex = /XID\=([0-9]+)(?:"\>|\>)(.+)\<.*/gm;
-    const stripAnchorRegex = /(<\/?[a|A][^>]*>|)/gm;
     return eventResponseArray
       .map(item => ({
-        match: getIdRegex.exec(item),
-        message: item.replaceAll(stripAnchorRegex, "")
+        match: GET_ID_REGEX.exec(item),
+        message: item.replaceAll(STRIP_ANCHOR_REGEX, "")
       }))
       .filter(item => item.match !== null)
       .map(item => {
@@ -60,12 +61,20 @@ function App() {
       })
   }, [eventResponseArray])
 
+  const usersRevivedAsAnArray = useMemo (() => {
+    return Object.values(usersRevivedAsObject)
+  }, [usersRevivedAsObject])
+
+  const parsedUserEventsAsAnArray = useMemo (() => {
+    return Object.values(parsedUserEventsAsObject)
+  }, [parsedUserEventsAsObject])
+
   const finalData = useMemo(() => {
-    return Object.values(usersRevivedAsObject).map(item => {
+    return usersRevivedAsAnArray.map(item => {
       return {
         ...item,
         reviveTotal: item.reviveSuccess + item.reviveFailure,
-        events: Object.values(parsedUserEventsAsObject).filter(log => log.id === item.id),
+        events: parsedUserEventsAsAnArray.filter(log => log.id === item.id),
         faction: item.faction
       }
     })
