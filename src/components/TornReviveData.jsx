@@ -1,9 +1,9 @@
 
-export const TornReviveData = ({ finalData }) => {
+export const TornReviveData = ({ userDataAsAnArrayFilteredByFaction }) => {
 
     return (
         <div className="user-card-wrapper">
-            {finalData.map((item) => (
+            {userDataAsAnArrayFilteredByFaction.map((item) => (
                 <div className="user-card">
                     <div className="card-container">
                         <div>{item.name}[{item.id}]</div>
