@@ -81,6 +81,14 @@ function App() {
     })
   }, [usersRevivedAsObject, parsedUserEventsAsObject])
 
+  const userDataAsAnArrayFilteredByFaction = useMemo(() => {
+    const factionSearchParam = factionFilterValue
+    if (factionSearchParam === "") {
+      return finalData
+    }
+    return finalData.filter(item => item.faction.toUpperCase() === factionSearchParam.toLocaleUpperCase())
+  }, [finalData, factionFilterValue])
+
   const apiHandler = async (userApiValue) => {
     const search = userApiValue
     try {
@@ -135,7 +143,7 @@ function App() {
 
       {state === 'complete' && (
         <div>
-          <TornReviveData finalData={finalData} />
+          <TornReviveData userDataAsAnArrayFilteredByFaction={userDataAsAnArrayFilteredByFaction} />
         </div>
       )}
 
