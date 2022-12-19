@@ -82,11 +82,11 @@ function App() {
   }, [usersRevivedAsObject, parsedUserEventsAsObject])
 
   const userDataAsAnArrayFilteredByFaction = useMemo(() => {
-    const factionSearchParam = factionFilterValue
+    const factionSearchParam = factionFilterValue.toLocaleUpperCase()
     if (factionSearchParam === "") {
       return finalData
     }
-    return finalData.filter(item => item.faction.toUpperCase() === factionSearchParam.toLocaleUpperCase())
+    return finalData.filter(item => item.faction.toUpperCase() === factionSearchParam)
   }, [finalData, factionFilterValue])
 
   const apiHandler = async (userApiValue) => {
